@@ -1,0 +1,204 @@
+<html><head><base href=""><title>JKOPAY 抽獎活動</title><meta charset="utf-8"><style>
+body {
+    font-family: Arial, '微軟正黑體', sans-serif;
+    background: #ff0033;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.input-section {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background: #FFD700;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 10px;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.draw-section {
+    margin-top: 20px;
+}
+
+.winner-display {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.winner-card {
+    background: white;
+    color: #ff0033;
+    padding: 10px 20px;
+    border-radius: 5px;
+    animation: popIn 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.prize-amount {
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 1px 1px 1px #ff0033;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.pig-mascot {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+}
+
+</style></head>
+<body>
+    <div class="container">
+        <svg class="pig-mascot" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#FFC0CB"/>
+            <circle cx="35" cy="40" r="5" fill="black"/>
+            <circle cx="65" cy="40" r="5" fill="black"/>
+            <circle cx="50" cy="55" r="10" fill="#FF9999"/>
+        </svg>
+        
+        <h1>JKOPAY 幸運抽獎活動</h1>
+        
+        <div class="input-section">
+            <h2>請輸入參與抽獎名單</h2>
+            <p>每行輸入一個名字</p>
+            <textarea id="nameList" placeholder="王小明&#13;李小華&#13;張大明"></textarea>
+            <button id="draw1000" onclick="draw1000()">抽出1000元得獎者</button>
+            <button id="draw5000" onclick="draw5000()" disabled>抽出5000元得獎者</button>
+            <button id="draw10000" onclick="draw10000()" disabled>抽出10000元得獎者</button>
+        </div>
+
+        <div class="draw-section">
+            <h2>抽獎結果</h2>
+            <h3>1000元得獎名單 (20名)</h3>
+            <div id="winners1000" class="winner-display"></div>
+            
+            <h3>5000元得獎名單 (10名)</h3>
+            <div id="winners5000" class="winner-display"></div>
+
+            <h3>10000元得獎名單 (5名)</h3>
+            <div id="winners10000" class="winner-display"></div>
+        </div>
+    </div>
+
+<script>
+let remainingNames = [];
+let winners = [];
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function displayWinner(winner, prize, containerId, delay) {
+    setTimeout(() => {
+        const winnerCard = document.createElement('div');
+        winnerCard.className = 'winner-card';
+        winnerCard.innerHTML = `
+            <span>${winner}</span>
+            <span class="prize-amount">${prize}元</span>
+        `;
+        document.getElementById(containerId).appendChild(winnerCard);
+    }, delay);
+}
+
+function draw1000() {
+    document.getElementById('winners1000').innerHTML = '';
+    
+    // Get names from textarea
+    remainingNames = document.getElementById('nameList').value
+        .split('\n')
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
+
+    if (remainingNames.length < 35) {
+        alert('請至少輸入35個名字以進行抽獎！');
+        return;
+    }
+
+    remainingNames = shuffleArray(remainingNames);
+    const winners1000 = remainingNames.splice(0, 20);
+    
+    winners1000.forEach((winner, index) => {
+        displayWinner(winner, 1000, 'winners1000', index * 200);
+        winners.push(winner);
+    });
+
+    document.getElementById('draw5000').disabled = false;
+}
+
+function draw5000() {
+    document.getElementById('winners5000').innerHTML = '';
+    
+    const winners5000 = remainingNames.splice(0, 10);
+    
+    winners5000.forEach((winner, index) => {
+        displayWinner(winner, 5000, 'winners5000', index * 200);
+        winners.push(winner);
+    });
+
+    document.getElementById('draw10000').disabled = false;
+}
+
+function draw10000() {
+    document.getElementById('winners10000').innerHTML = '';
+    
+    const winners10000 = remainingNames.splice(0, 5);
+    
+    winners10000.forEach((winner, index) => {
+        displayWinner(winner, 10000, 'winners10000', index * 200);
+        winners.push(winner);
+    });
+
+    document.getElementById('draw10000').disabled = true;
+}
+</script>
+</body></html>
